@@ -1,8 +1,8 @@
-/* darsio.com : menu sur téléphone, en-tête au défilement, version et liens d'achat (un seul endroit à régler : CONFIG) */
+/* darsio.pages.dev : menu sur téléphone, en-tête au défilement, version et liens d'achat (un seul endroit à régler : CONFIG) */
 const CONFIG = {
     email: 'contact@darsio.com',
     whatsapp: '',               // numéro international sans « + » ni espaces, ex. '212600000000' (vide : pas de bouton WhatsApp)
-    prix: '350 DH',
+    prix: '199 DH',
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -27,7 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const d = new Date(v.date + 'T12:00:00');
             document.querySelectorAll('[data-version-date]').forEach(e => (e.textContent = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })));
         }
-        if (v.installateur) document.querySelectorAll('[data-telecharger]').forEach(a => (a.href = v.installateur));
+        document.querySelectorAll('[data-telecharger]').forEach(a => {
+            if (v.installateur) { a.href = v.installateur; return; }
+            // installateur pas encore en ligne : pas de lien mort, on oriente vers le contact
+            a.href = '/contact/';
+            a.textContent = 'Téléchargement bientôt disponible · nous écrire';
+        });
         if (v.sha256) document.querySelectorAll('[data-sha256]').forEach(e => (e.textContent = v.sha256));
         if (v.taille) document.querySelectorAll('[data-taille]').forEach(e => (e.textContent = v.taille));
         const liste = document.querySelector('[data-nouveautes]');
@@ -35,7 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }).catch(() => {});
 
     // achat : WhatsApp (si un numéro est réglé) et e-mail, avec le prix et le code du PC (?code=… depuis l'application)
-    const code = new URLSearchParams(location.search).get('code') || '';
+    const params = new URLSearchParams(location.search);
+    const code = params.get('code') || params.get('pc') || '';      // ?pc= : lien « Moyens de paiement » de l'application
     const champCode = document.querySelector('#code-pc');
     if (champCode && code) champCode.value = code.slice(0, 64);
     const message = () => {

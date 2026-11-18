@@ -1,4 +1,4 @@
-# darsio.com
+# darsio.pages.dev
 
 Site officiel de Darsio — phase 1 : accueil, téléchargement, tarifs, contact, pages légales.
 HTML et CSS simples, sans outil de construction : chaque page se modifie directement.
@@ -25,19 +25,29 @@ robots.txt, sitemap.xml    Référencement
 ## À compléter avant la mise en ligne
 
 1. `assets/js/site.js` → `CONFIG.whatsapp` : le numéro WhatsApp Business (format 212XXXXXXXXX). Vide, le bouton n'apparaît pas.
-2. Créer la boîte `contact@darsio.com` (l'application l'utilise aussi pour l'achat).
+2. Adresse e-mail de contact : `contact@darsio.com` (dans `CONFIG.email` et dans l'application). Elle ne marche que
+   lorsque le domaine darsio.com est acheté et la boîte créée ; d'ici là, mettre une adresse qui existe.
 3. Pages légales : remplir les passages en surbrillance (raison sociale, ICE, adresse, TVA, remboursement, tribunal),
    faire relire, puis retirer le cadre « Projet à faire relire ».
 4. `version.json` à chaque version : `version`, `date`, `installateur`, `taille`, `sha256`, `nouveautes`.
    Empreinte : `certutil -hashfile Darsio-setup-1.2611.exe SHA256` (PowerShell : `Get-FileHash`).
 
-## Mise en ligne (Cloudflare)
+## Mise en ligne (Cloudflare Pages, relié à GitHub)
 
-1. Pages → Create → Upload assets (ou relier un dépôt Git) : ce dossier, tel quel. Pas de commande de construction.
-2. Custom domains → `darsio.com` et `www.darsio.com` (redirection www → darsio.com).
-3. L'installateur dépasse la limite de 25 Mo par fichier de Pages : le mettre dans un compartiment R2 relié à
-   `telechargement.darsio.com`, et indiquer son adresse dans `version.json` → `installateur`.
-4. Web Analytics → activer pour darsio.com (sans cookie : pas de bandeau à afficher).
+Le site est en ligne sur **https://darsio.pages.dev**, publié depuis le dépôt `bilalbassiri/darsio-site` :
+chaque `git push` sur `main` met le site à jour (pas de commande de construction).
+
+1. L'installateur (≈ 170 Mo) dépasse la limite de 25 Mo par fichier de Pages. L'héberger ailleurs, par exemple :
+   - **GitHub Releases** (gratuit, jusqu'à 2 Go par fichier) : créer une version `v1.2612` dans le dépôt et y joindre
+     `Darsio-Setup-1.2612.exe` ; l'adresse ressemble à
+     `https://github.com/bilalbassiri/darsio-site/releases/download/v1.2612/Darsio-Setup-1.2612.exe` ;
+   - ou un compartiment **Cloudflare R2** public.
+   Puis indiquer cette adresse dans `version.json` → `installateur` (avec `taille` et `sha256`).
+   Tant que `installateur` est vide, le bouton de la page Télécharger renvoie vers la page Contact (pas de lien mort).
+2. Domaine darsio.com (plus tard) : Pages → Custom domains → `darsio.com` ; remplacer alors `https://darsio.pages.dev`
+   par `https://darsio.com` dans les pages, `sitemap.xml`, `robots.txt`, `version.json`, et dans l'application
+   (`backend/mises_a_jour.py`, `backend/licence.py`, `outils/darsio.iss`).
+3. Web Analytics → activer pour darsio.pages.dev (sans cookie : pas de bandeau à afficher).
 
 ## Vérifier en local
 
